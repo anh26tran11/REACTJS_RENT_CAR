@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Base API instance
 const api = axios.create({
-  baseURL: process.env.VITE_API_URL, // Dựa vào README, Backend đang chạy cổng 5000
+  baseURL: import.meta.env.VITE_API_URL, // Dựa vào README, Backend đang chạy cổng 5000
   headers: {
     'Content-Type': 'application/json',
   },
