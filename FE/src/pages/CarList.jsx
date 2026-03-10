@@ -137,7 +137,7 @@ const CarList = () => {
                     <span className="text-lg font-bold text-orange-500">{car.daily_price?.toLocaleString()} ₫</span>
                     <span className="text-gray-400 text-xs">/ngày</span>
                   </div>
-                  <Link to="/checkout">
+                  <Link to="/checkout" state={{ car }}>
                     <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white font-medium px-4">Đặt xe</Button>
                   </Link>
                 </div>

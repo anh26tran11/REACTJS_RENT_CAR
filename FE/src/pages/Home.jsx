@@ -213,7 +213,7 @@ const Home = () => {
                       </span>
                       <span className="text-xs text-gray-400">/ngày</span>
                     </div>
-                    <Link to="/checkout">
+                    <Link to="/checkout" state={{ car }}>
                       <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-5">
                         Đặt xe
                       </Button>

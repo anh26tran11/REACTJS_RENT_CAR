@@ -69,3 +69,17 @@ export const cancelOrder = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Get user orders
+// @route   GET /api/orders
+// @access  Private
+export const getUserOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ user_id: req.user._id })
+      .populate('car_id')
+      .sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

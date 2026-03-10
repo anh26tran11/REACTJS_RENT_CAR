@@ -1,5 +1,5 @@
 import express from 'express';
-import { createOrder, cancelOrder } from '../controllers/orderController.js';
+import { createOrder, cancelOrder, getUserOrders } from '../controllers/orderController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -7,6 +7,20 @@ const router = express.Router();
 /**
  * @swagger
  * /api/orders:
+ *   get:
+ *     summary: Lấy danh sách đơn đặt xe của người dùng
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Danh sách đơn hàng
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Order'
  *   post:
  *     summary: Tạo đơn đặt xe mới
  *     tags: [Orders]
@@ -47,7 +61,7 @@ const router = express.Router();
  *       404:
  *         description: Xe không tồn tại
  */
-router.post('/', protect, createOrder);
+router.route('/').post(protect, createOrder).get(protect, getUserOrders);
 
 /**
  * @swagger

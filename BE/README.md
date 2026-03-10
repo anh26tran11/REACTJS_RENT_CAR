@@ -2,7 +2,7 @@
 
 Tài liệu này mô tả chi tiết các API (Endpoints), cách sử dụng (Payload), và các dữ liệu trả về (Response) cho hệ thống Backend của dịch vụ thuê xe VroomCar.
 
-**Base URL**: `http://localhost:5000/api`
+**Base URL**: `https://reactjs-rent-car.onrender.com/api`
 
 ---
 
