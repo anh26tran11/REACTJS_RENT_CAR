@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Base API instance
 const api = axios.create({
-  baseURL: 'http://localhost:3001/api', // Dựa vào README, Backend đang chạy cổng 5000
+  baseURL: process.env.VITE_API_URL, // Dựa vào README, Backend đang chạy cổng 5000
   headers: {
     'Content-Type': 'application/json',
   },
