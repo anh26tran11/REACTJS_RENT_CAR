@@ -18,11 +18,13 @@ connectDB();
 
 const app = express();
 
-// Middleware
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+//list url
+const corsOptions = {
+  origin: ['http://localhost:3000', 'https://reactjs-rent-car.onrender.com'],
   credentials: true,
-}));
+};
+// Middleware
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.get('/', (req, res) => {
