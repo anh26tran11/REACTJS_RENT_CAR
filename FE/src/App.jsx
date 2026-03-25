@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 import OrderHistory from './pages/OrderHistory';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import PaymentQR from './pages/PaymentQR';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="cars" element={<CarList />} />
             <Route path="checkout" element={<Checkout />} />
+            <Route path="payment-qr" element={<PaymentQR />} />
             <Route path="profile" element={<Profile />} />
             <Route path="history" element={<OrderHistory />} />
           </Route>

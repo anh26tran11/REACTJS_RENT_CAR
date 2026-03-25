@@ -69,9 +69,15 @@ const Checkout = () => {
         payment_method: paymentMethod,
       };
 
-      await api.post('/orders', orderData);
+      const response = await api.post('/orders', orderData);
       toast.success('Đặt xe thành công!');
-      navigate('/order-history');
+      
+      if (paymentMethod === 'Chuyển khoản') {
+        const createdOrder = response.data;
+        navigate('/payment-qr', { state: { order: createdOrder } });
+      } else {
+        navigate('/history');
+      }
     } catch (error) {
       toast.error('Có lỗi xảy ra khi thanh toán');
       console.error(error);
