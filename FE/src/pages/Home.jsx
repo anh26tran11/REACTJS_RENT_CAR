@@ -50,8 +50,6 @@ const Home = () => {
   }, []);
   return (
     <div className="w-full">
-
-      {/* ─── HERO ───────────────────────────────────────────────────── */}
       <section className="relative min-h-[580px] flex items-center">
         <div
           className="absolute inset-0 bg-cover bg-center"

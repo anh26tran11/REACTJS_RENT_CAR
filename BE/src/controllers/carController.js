@@ -5,9 +5,13 @@ import Car from '../models/Car.js';
 // @access  Public
 export const getCars = async (req, res) => {
   try {
-    const { category, location, seats } = req.query;
+    const { category, location, seats, search, maxPrice } = req.query;
 
     let query = {};
+
+    if (search) {
+      query.car_name = { $regex: search, $options: 'i' };
+    }
 
     if (category) {
       query.category = category;
@@ -20,6 +24,10 @@ export const getCars = async (req, res) => {
 
     if (seats) {
       query.seats = Number(seats);
+    }
+
+    if (maxPrice) {
+      query.daily_price = { $lte: Number(maxPrice) };
     }
 
     const cars = await Car.find(query);

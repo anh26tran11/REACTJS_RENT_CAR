@@ -8,15 +8,24 @@ import { Link } from 'react-router-dom';
 import api from '../lib/api';
 
 const CarList = () => {
-  const [cars, setCars] = useState([]);
+  const [allCars, setAllCars] = useState([]);
+  const [filteredCars, setFilteredCars] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Filter states
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('Tất cả');
+  const [location, setLocation] = useState('all');
+  const [maxPrice, setMaxPrice] = useState('');
+
+  // Fetch tất cả xe từ API một lần duy nhất
   useEffect(() => {
     const fetchCars = async () => {
       try {
         setLoading(true);
         const { data } = await api.get('/cars');
-        setCars(data);
+        setAllCars(data);
+        setFilteredCars(data);
       } catch (error) {
         console.error("Lỗi khi tải danh sách xe:", error);
       } finally {
@@ -26,13 +35,44 @@ const CarList = () => {
     fetchCars();
   }, []);
 
+  // Lọc dữ liệu trực tiếp ở phía Frontend (Client-side filtering)
+  useEffect(() => {
+    let result = allCars;
+
+    if (search) {
+      result = result.filter(car => car.car_name.toLowerCase().includes(search.toLowerCase()));
+    }
+
+    if (category !== 'Tất cả') {
+      result = result.filter(car => car.category === category);
+    }
+
+    if (location !== 'all') {
+      const locStr = location === 'hn' ? 'Hà Nội' : location === 'hcm' ? 'Hồ Chí Minh' : location === 'dn' ? 'Đà Nẵng' : location;
+      result = result.filter(car => car.location && car.location.toLowerCase().includes(locStr.toLowerCase()));
+    }
+
+    if (maxPrice) {
+      result = result.filter(car => car.daily_price <= Number(maxPrice));
+    }
+
+    setFilteredCars(result);
+  }, [search, category, location, maxPrice, allCars]);
+
+  const handleClearFilters = () => {
+    setSearch('');
+    setCategory('Tất cả');
+    setLocation('all');
+    setMaxPrice('');
+  };
+
   return (
     <div className="container mx-auto px-4 lg:px-8 py-8 flex flex-col md:flex-row gap-8">
       {/* Sidebar Filter */}
       <aside className="w-full md:w-64 flex-shrink-0 bg-white p-6 rounded-xl border border-gray-100 shadow-sm h-fit">
         <div className="flex justify-between items-center mb-6">
           <h2 className="font-bold text-lg text-slate-900">Bộ lọc</h2>
-          <button className="text-orange-500 text-sm font-medium hover:underline">Xóa tất cả</button>
+          <button onClick={handleClearFilters} className="text-orange-500 text-sm font-medium hover:underline">Xóa tất cả</button>
         </div>
 
         {/* Search */}
@@ -43,6 +83,8 @@ const CarList = () => {
             <input 
               type="text" 
               placeholder="Tên xe..." 
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
             />
           </div>
@@ -52,19 +94,23 @@ const CarList = () => {
         <div className="mb-6">
           <label className="text-sm font-semibold text-slate-700 block mb-2">Loại xe</label>
           <div className="flex flex-wrap gap-2">
-            <Badge className="bg-orange-500 hover:bg-orange-600 cursor-pointer">Tất cả</Badge>
-            <Badge variant="outline" className="text-slate-600 font-normal hover:bg-gray-50 border-gray-200 cursor-pointer">Sedan</Badge>
-            <Badge variant="outline" className="text-slate-600 font-normal hover:bg-gray-50 border-gray-200 cursor-pointer">SUV</Badge>
-            <Badge variant="outline" className="text-slate-600 font-normal hover:bg-gray-50 border-gray-200 cursor-pointer">Hatchback</Badge>
-            <Badge variant="outline" className="text-slate-600 font-normal hover:bg-gray-50 border-gray-200 cursor-pointer">Hạng sang</Badge>
-            <Badge variant="outline" className="text-slate-600 font-normal hover:bg-gray-50 border-gray-200 cursor-pointer">Bán tải</Badge>
+            {["Tất cả", "Sedan", "SUV", "Hatchback", "Hạng sang", "Bán tải"].map((cat) => (
+              <Badge 
+                key={cat}
+                variant={category === cat ? "default" : "outline"}
+                className={`cursor-pointer ${category === cat ? "bg-orange-500 hover:bg-orange-600" : "text-slate-600 font-normal hover:bg-gray-50 border-gray-200"}`}
+                onClick={() => setCategory(cat)}
+              >
+                {cat}
+              </Badge>
+            ))}
           </div>
         </div>
 
         {/* Location */}
         <div className="mb-6">
           <label className="text-sm font-semibold text-slate-700 block mb-2">Địa điểm</label>
-          <Select defaultValue="all">
+          <Select value={location} onValueChange={setLocation}>
             <SelectTrigger className="w-full bg-gray-50 border-gray-200 focus:ring-orange-500/20">
               <SelectValue placeholder="Tất cả" />
             </SelectTrigger>
@@ -83,6 +129,8 @@ const CarList = () => {
           <input 
             type="number" 
             placeholder="VD: 2000000" 
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
             className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
           />
         </div>
@@ -92,13 +140,13 @@ const CarList = () => {
       <main className="flex-1 w-full">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Thuê xe</h1>
-          <p className="text-gray-500 text-sm">Tìm thấy <span className="font-semibold text-slate-900">{cars.length}</span> xe phù hợp với nhu cầu của bạn</p>
+          <p className="text-gray-500 text-sm">Tìm thấy <span className="font-semibold text-slate-900">{filteredCars.length}</span> xe phù hợp với nhu cầu của bạn</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {loading ? (
              <p className="text-gray-500 py-6">Đang tải danh sách xe...</p>
-          ) : cars.map((car) => (
+          ) : filteredCars.map((car) => (
             <Card key={car._id} className="overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-lg transition-all group flex flex-col">
               <div className="relative h-48 overflow-hidden bg-gray-100">
                 <Badge className="absolute top-3 left-3 z-10 bg-orange-500 hover:bg-orange-600 text-xs px-2 py-0.5">{car.category}</Badge>

@@ -7,7 +7,7 @@ dotenv.config();
 const cars = [
   {
     car_name: "Toyota Vios",
-    category: "economy",
+    category: "Sedan",
     seats: 5,
     transmission_type: "automatic",
     fuel_type: "gasoline",
@@ -19,7 +19,7 @@ const cars = [
   },
   {
     car_name: "Honda CR-V",
-    category: "suv",
+    category: "SUV",
     seats: 7,
     transmission_type: "automatic",
     fuel_type: "gasoline",
@@ -31,7 +31,7 @@ const cars = [
   },
   {
     car_name: "Mercedes E-Class",
-    category: "luxury",
+    category: "Hạng sang",
     seats: 5,
     transmission_type: "automatic",
     fuel_type: "hybrid",
