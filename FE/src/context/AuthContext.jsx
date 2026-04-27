@@ -69,8 +69,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const changePassword = async (currentPassword, newPassword) => {
+    try {
+      await api.put('/users/change-password', { currentPassword, newPassword });
+      toast.success('Thay đổi mật khẩu thành công');
+      return { success: true };
+    } catch (error) {
+      toast.error('Sai mật khẩu! Yêu cầu nhập lại');
+      return { success: false };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout, updateProfile, changePassword }}>
       {!loading && children}
     </AuthContext.Provider>
   );

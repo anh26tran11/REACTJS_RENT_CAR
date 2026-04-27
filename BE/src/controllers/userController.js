@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import bcrypt from 'bcryptjs';
 
 // @desc    Update user profile
 // @route   PUT /api/users/profile
@@ -23,6 +24,27 @@ export const updateUserProfile = async (req, res) => {
       });
     } else {
       res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Change user password
+// @route   PUT /api/users/change-password
+// @access  Private
+export const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (user && (await bcrypt.compare(currentPassword, user.password))) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(newPassword, salt);
+      await user.save();
+      res.json({ message: 'Thay đổi mật khẩu thành công' });
+    } else {
+      res.status(401).json({ message: 'Sai mật khẩu! Yêu cầu nhập lại' });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });

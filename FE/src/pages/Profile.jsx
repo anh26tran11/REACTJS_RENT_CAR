@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const Profile = () => {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, changePassword } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -14,6 +14,13 @@ const Profile = () => {
     phone_number: '',
   });
   const [loading, setLoading] = useState(false);
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -37,6 +44,24 @@ const Profile = () => {
     setLoading(true);
     await updateProfile(formData);
     setLoading(false);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
+  };
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error('Mật khẩu xác nhận không khớp');
+      return;
+    }
+    setPasswordLoading(true);
+    const res = await changePassword(passwordData.currentPassword, passwordData.newPassword);
+    if (res.success) {
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    }
+    setPasswordLoading(false);
   };
 
   return (
@@ -97,6 +122,52 @@ const Profile = () => {
           <div className="pt-6">
             <Button disabled={loading} type="submit" size="lg" className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-6 text-base rounded-xl disabled:opacity-70">
               <Save className="w-5 h-5 mr-2" /> {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
+            </Button>
+          </div>
+        </form>
+
+        {/* Separator */}
+        <hr className="my-10 border-gray-100 max-w-xl mx-auto" />
+
+        <h2 className="text-xl font-bold text-slate-900 mb-6 max-w-xl mx-auto">Thay đổi mật khẩu</h2>
+        
+        <form onSubmit={handlePasswordSubmit} className="max-w-xl mx-auto space-y-6">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Mật khẩu hiện tại</label>
+            <input 
+              type="password" 
+              name="currentPassword"
+              value={passwordData.currentPassword} 
+              onChange={handlePasswordChange}
+              required
+              className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-medium" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Mật khẩu mới</label>
+            <input 
+              type="password" 
+              name="newPassword"
+              value={passwordData.newPassword} 
+              onChange={handlePasswordChange}
+              required
+              className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-medium" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Xác nhận mật khẩu mới</label>
+            <input 
+              type="password" 
+              name="confirmPassword"
+              value={passwordData.confirmPassword} 
+              onChange={handlePasswordChange}
+              required
+              className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-medium" 
+            />
+          </div>
+          <div className="pt-2">
+            <Button disabled={passwordLoading} type="submit" size="lg" className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-6 text-base rounded-xl disabled:opacity-70 transition-colors">
+              {passwordLoading ? 'Đang cập nhật...' : 'Cập nhật mật khẩu'}
             </Button>
           </div>
         </form>
